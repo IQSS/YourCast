@@ -1,0 +1,568 @@
+\documentclass[oneside,letterpaper,titlepage]{article}
+%\usepackage[notref]{showkeys} % [notref]
+\usepackage{Rd}
+\usepackage{Sweave}
+\usepackage{upquote}
+
+\usepackage[reqno]{amsmath}
+\usepackage{inputenc}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{bbm}
+\usepackage{epsf}
+%\usepackage{psfig}
+%\usepackage{wcolor}
+\usepackage{textcomp} % for \texttrademark
+\usepackage{makeidx}
+
+\usepackage{verbatim}
+% \usepackage{epsf}
+\usepackage{url}
+\usepackage{html}
+\usepackage{dcolumn}
+\usepackage{longtable}
+\usepackage{vmargin}
+\topmargin=0in
+\def\fp#1{\mathbbm{#1}}
+
+%\setpapersize{USletter}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{d}[1]{D{.}{.}{#1}}
+%\pagestyle{myheadings}
+\htmladdtonavigation{
+  \htmladdnormallink{%
+    \htmladdimg{http://gking.harvard.edu/pics/home.gif}}
+  {http://gking.harvard.edu/}}
+\newcommand{\hlink}{\htmladdnormallink}
+
+\bodytext{ BACKGROUND="http://gking.harvard.edu/pics/temple.jpg"}
+\setcounter{tocdepth}{3}
+
+\newcommand{\YourCast}{\textsc{YourCast}}
+
+\title{\YourCast: Software for Simultaneous Time Series Forecasting
+  with Your Assumptions\thanks{Available from
+    http://GKing.Harvard.Edu/yourcast via a Creative Commons
+    Attribution-Noncommercial-No Derivative Works 3.0, for academic
+    use only.  For expert programming assistance and many helpful
+    comments, our thanks goes to Jon Bishof, Elena Villalon, and
+    Nirmala Ravishankar.}}
+
+\author{Federico Girosi\thanks{Associate Professor in Population Health, University of Western Sidney
+    , (Centre for Health Research, Building 3, Campbelltown Campus, Locked Bag 1797, Penrith NSW 2751, Australia;
+    \texttt{F.Girosi@uws.edu.au}, +61 2 9852 5222 x3605).},
+%
+Gary King\thanks{Albert J. Weatherhead III University Professor, Harvard
+  University (Institute for Quantitative Social Science, 1737
+  Cambridge Street, Harvard University, Cambridge MA 02138;
+  \texttt{http://GKing.Harvard.Edu}, \texttt{King@Harvard.edu}, (617)
+  495-2027).}, and
+%
+Konstantin Kashin\thanks{Ph.D. Candidate, Harvard
+  University (Institute for Quantitative Social Science, 1737
+  Cambridge Street, Harvard University, Cambridge MA 02138;
+  \texttt{http://konstantinkashin.com}, \texttt{kkashin@fas.harvard.edu}, (617)
+  871-9884).}}
+
+\makeindex
+
+%\VignetteIndexEntry{Time Series Forecasting with Your Assumptions}
+%\VignetteDepends{YourCast}
+%\VignetteKeyWords{time series, forecasting}
+%\VignettePackage{YourCast}
+
+
+\begin{document}\maketitle
+
+\begin{rawhtml} 
+  <p> [Also available is a down-loadable <a
+  href="/yourcast/docs/yourcast.pdf">PDF</a> version of this entire
+  document]
+\end{rawhtml}
+\tableofcontents
+\section{Introduction}
+
+\YourCast\ implements the methods for demographic forecasting
+discussed in:
+\begin{quote}
+  Federico Girosi and Gary King. 2008.  \emph{Demographic
+    Forecasting}. Princeton: Princeton University Press,
+  \url{http://gking.harvard.edu/files/abs/smooth-abs.shtml}.
+\end{quote}
+Please read at least Chapter 1 of the book before attempting
+to use \YourCast.
+
+At its most basic, \YourCast\ runs linear regressions, and estimates
+the usual quantities of interest, such as forecasts, causal effects,
+etc.  The benefit of running \YourCast\ over standard linear
+regression software comes from the improved performance due to
+estimating sets of regressions together in sophisticated ways.
+
+\YourCast\ avoids the bias that results from stacking datasets from
+separate cross-sections and assuming constant parameters, and the
+inefficiency that results from running independent regressions in each
+cross-section.  \YourCast\ instead allows you to tie the different
+regressions together probabilistically in ways consistent with what
+you know about the world and your data.  The model allows you to have
+different covariates with different meanings measured in different
+cross-sections.
+
+For example, one might assume that the separate time series
+regressions in neighboring (or ``similar'') countries are more alike.
+Our approach is fully Bayesian, but you need not assume as the
+standard Bayesian approach does that the \emph{coefficients} (which
+are never observed) in neighboring countries are similar.  \YourCast\ 
+makes it possible to assume instead that neighboring countries are
+similar in their values or trends in the \emph{expected value of the
+  dependent variable}.  This approach is advantageous because prior
+knowledge almost always exists about the dependent variable (such as
+that the age profile of mortality looks like the Nike swoosh), and the
+expected value is always on the same metric even when including
+explanatory variables that differ in number or meaning in each
+country.
+
+The power of \YourCast\ to improve forecasts comes from allowing one
+to smooth in many sophisticated ways, in addition to across countries.
+You can thus decide whether to smooth over indices that are
+geographic, grouped versions of underlying continuous variables (such
+as age groups), time, or interactions among these.  For example, you
+can assume that, unless contradicted by the data, forecasts should be
+relatively smooth over time, or that the forecast time trends should
+be similar in adjacent age groups, or even that the differences in
+time trends between adjacent age groups stay roughly similar as they
+vary over countries.  The model works with time-series-cross-sectional
+(TS-CS) data but also data for which the time series varies over more
+than one cross-section (TS-CS-CS-CS\ldots\ data such as log-mortality
+over time by age, country, sex, and cause).   The specific notion of
+``smoothness'' or ``similarity'' used in \YourCast\ is also your
+choice.  The assumptions made by the statistical model are therefore
+governed your choices, and the sophistication of those assumptions and
+the degree to which they match empirical reality are, for the most
+part, limited only by what you may know or are willing to assume
+rather than arbitrary choices embedded in a mathematical model.  In
+our work, we have found that \YourCast\ makes it possible to improve
+forecasts well beyond that possible with traditional regression (or
+autoregression) strategies, although of course we make no promises
+about the future except that your performance may vary.
+
+\section{Installation}
+
+\YourCast\ requires the current version of \R\ as well as the
+packages \texttt{sma}, \texttt{lattice}, and \texttt{foreign} which
+are loaded automatically by \YourCast.  Installation of \YourCast\ 
+differs slightly by operating system.
+
+\subsection{Linux/Unix}
+
+From the \R\ command line, type
+  \begin{verbatim}
+  > install.packages("YourCast", repos="http://gking.harvard.edu", destdir="~/") .
+  \end{verbatim}
+Alternatively, from a Linux/Unix shell, download the current Unix
+bundle by typing in the same directory as the downloaded file:
+  \begin{verbatim}
+  > R CMD INSTALL --library=.R/library YourCast.tar.gz  
+  \end{verbatim}
+
+\subsection{Windows}
+
+From the \R\ command line, type
+  \begin{verbatim}
+  > install.packages("YourCast", repos="http://gking.harvard.edu") .
+  \end{verbatim}
+Alternatively, download the Windows bundle from
+\url{http://gking.harvard.edu/yourcast}.  From the GUI, click on the
+menu ``Packages'', click on the option ``Install package(s) from local
+zip files'', and select the zip file that you downloaded.
+
+\section{User's Guide}
+
+YourCast works with multiple data sets in the same model.  Thus, we
+require a more complicated data structure than the usual single data
+frame used for most statistical models in \R.  Although you can create
+this object yourself and input it directly into the \code{yourcast()}
+function, it is normally easier to use the tools we created to build
+this data structure automatically.  To do this requires following
+three steps: (1) labeling and organizing the data in a format we
+describe; (2) running the \code{yourprep()} function to prepare your
+data, create an input object in the format we need; and load it into
+\R; and (3) running the \code{yourcast()} function to generate
+forecasts.  We describe these steps in the following subsections, and
+follow it with a detailed example that illustrates all steps from
+start to end.
+
+\subsection{Data Preparations}
+
+\YourCast\ operates on time series cross-sectional data indexed by (1)
+a time period such as a year, (2) a grouped continuous variable such
+as an age group, and (3) a spatial or geographic variable such as
+geographic region or country.  To fix ideas, we refer to these as
+time, age, and geography, respectively, but obviously they may change
+in other applications.  (Either the age or geography indexes, but not
+both, may be dropped if desired.)  We require a single dependent
+variable, such as mortality rates, to be the same and have the same
+meaning for all units \citet[see][\S 8.4 for an exeception]{GirKin08}.
+Covariates may differ in number, meaning, and content across both age
+and geography.
+
+Thus, \YourCast\ analyzes a set of data sets, each defined for one
+cross-sectional unit indexed by age and/or geography.  Inside the data
+set corresponding to each cross-sectional unit is a time series with
+measures on the dependent variable and the covariates observed in this
+cross section.  An example would be an annual time series (say
+1952-1996) with the dependent variable of mortality rates and several
+covariates, all within the cross-section of 15-20 year olds in Uganda.
+All cross-sections should have the same time indices (1952-1996),
+possibly with some different overlapping observation periods, the same
+dependent variable, and covariates that are the same, completely
+different, or overlapping from cross-section to cross-section.
+
+All the individual cross-section data sets (each containing a time
+series) must be on in a single subdirectory on disk in fixed width
+text files (\file{.txt}), comma separated value files (\file{.csv}),
+or Stata data files (\file{.dta}).  (Alternatively, they may be in
+memory, in your \R\ workspace.)  Each file must be named with one
+string in three parts: an alphanumeric tag of the user's choice, a
+geography code of between zero (for no geography index) and four
+digits, and an age group code of between zero (for no age group index)
+to four digits.  For example, if you have observations on cancer
+deaths for age group 45 (which might represent 45-50 year olds) for
+U.S.\ citizens (e.g., geography code \sQuote{2450}), you may decide to
+choose tag ``cancer''.  We would add a file extension as well and so
+if the data are in a plain text file, we put these elements together
+and the file name would be \file{cancer245045.txt}.  
+
+So we can understand your coding scheme, include an extra file in the
+same directory called \file{tag.index.code}, where ``tag'' is the
+actual alphanumeric tag you chose (not the word t-a-g).  For the
+example above, the filename would be \file{cancer.index.code}.  The
+contents of the file should be 0--4 letters \code{g} followed by 0--4
+letters \code{a}.  In the example above, the entire contents of the
+file is: \code{ggggaa}.
+
+Optionally, you may also add files that contain labels for each of the
+time, age, and geography codes.  If these are included, they will make
+text and graphics output easier to interpret (and they may be useful
+documentation for you separate from yourcast).  The files are
+\code{tag.T.names} for time periods, \code{tag.A.names} for age
+groups, and \code{tag.G.names} for geographic regions, where again
+``tag'' is your chosen alphanumeric tag.  The contents of each file
+should be ASCII text with all valid numerical codes in the first
+column and a corresponding label in the second column.  Include column
+labels in the first row.  So for geography, the second column might be
+country names and the columns would be labeled ``region'' and
+``name''.  If the codes are interpretable as is, such as is often the
+case for age groups and time periods, then you can omit the
+corresponding file.
+
+Finally, if you wish to smooth over geographic regions, which the
+\sQuote{map} and \sQuote{bayes} methods allow, you must also include a
+file called \code{tag.proximity.txt} where ``tag'' is your chosen
+alphanumeric tag and ``\file{.txt}'' is used for text files but can
+also be used with comma separated files (\file{.csv}), or Stata data
+files (\file{.dta}).  The larger the proximity score, the more
+proximate that pair of countries is in the prior; a zero element means
+the two geographic areas are unrelated, and the diagonal is ignored.
+Each row of the \code{proximity} file has three columns, consisting of
+geographic codes for two countries followed by a score indicating the
+proximity of the two geographic regions; please include column labels.
+For convenience, geographic regions that are unrelated (and would have
+zero entries in the symmetric matrix) may be omitted from
+\code{proximity}.  In addition, \code{proximity} may include rows
+corresponding to geographic regions not included in the present
+analysis.
+
+\subsection{Loading in the Data}
+
+We load in all the data described in the previous section at once by
+using the function \code{yourprep()}.  The only required argument is
+the chosen alphanumeric tag (and the subdirectory name if its not the
+working directory).  The program will then attempt to load all files
+in that directory beginning with the chosen tag and will ignore the
+rest.  Then run the function.  For example:
+\begin{verbatim}
+ydata <- yourprep(tag="cancerMales")
+\end{verbatim}
+The output object \texttt{ydata} (of class \sQuote{yourprep}) now includes all
+the data and associated information needed for making forecasts.
+
+\subsection{Making Forecasts}
+
+To make forecasts, we require the data object, name the variables with
+a standard \R\ formula, and the model.  A regression is estimated for
+each cross section (tied together by any chosen priors), and so an
+explanatory variable listed in the formula is used for a particular
+cross-section if it is in the formula and it is present in that
+cross-section's data set.  (That is, a variable not measured for a
+cross-section is dropped only for that cross-section.)  As an example:
+\begin{verbatim}
+ylc <- yourcast(formula=log(rspi2/popu2) ~ time, dataobj=dta, model="LC")
+\end{verbatim}
+
+Finally, the output object \code{ylc} (of class yourcast) can be
+plotted with function \code{plot.yourcast(ylc)} summarized with
+function \code{summarize(ylc)}, or accessed directly (use
+\code{names(ylc)} to see the contents).
+
+\subsection{Example}
+
+We now reconstruct the demo \code{chp.11.1} from start to finish to
+illustrate the capabilities of the \YourCast\ software and provide
+further illustration to the user on how to take advantage of them.
+
+Most users will not have their data in a format easily readable by
+\code{yourcast()}. Thus for this example we will start with the raw
+\file{.txt} files and take advantage of the \code{yourprep()} software
+designed to help users construct the \sQuote{dataobj} list easily.
+
+We have stored the original files we used to create the \sQuote{dataobj}
+returned by typing \code{data(chp.11.1)} in \textsc{Yourcast}'s
+\sQuote{data} folder. You can view these files, which have the
+extension \file{.txt}, by typing:
+
+\begin{verbatim}
+> dir(paste(.libPaths()[1],"/YourCast/data",sep=""))
+ [1] "adjacency.txt"    "chp.11.10.RData"  "chp.11.11.RData"  "chp.11.12.RData"
+ [5] "chp.11.13.RData"  "chp.11.1.RData"   "chp.11.2.RData"   "chp.11.3.RData"
+ [9] "chp.11.4.RData"   "chp.11.5.RData"   "chp.11.7.1.RData" "chp.11.7.2.RData"
+[13] "chp.11.8.1.RData" "chp.11.8.2.RData" "chp.11.8.3.RData" "chp.11.9.1.RData"
+[17] "chp.11.9.2.RData" "chp.2.6.1.RData"  "chp.2.6.2.RData"  "chp.2.7.1.RData"
+[21] "chp.2.7.2.RData"  "chp.2.7.3.RData"  "cntry.codes.txt"  "cs2s204545.txt"
+[25] "csid204500.txt"   "csid204505.txt"   "csid204510.txt"   "csid204515.txt"
+[29] "csid204520.txt"   "csid204525.txt"   "csid204530.txt"   "csid204535.txt"
+[33] "csid204540.txt"   "csid204545.txt"   "csid204550.txt"   "csid204555.txt"
+[37] "csid204560.txt"   "csid204565.txt"   "csid204570.txt"   "csid204575.txt"
+[41] "csid204580.txt"
+
+\end{verbatim}. 
+
+We could load these files using the \code{data()} command, but for
+this example we will pretend they are files loaded into our working
+directory that we want \code{yourcast()} to be able to read.
+
+The function \code{yourprep()} in the \YourCast\ package is designed to
+help you turn these raw files into a \sQuote{dataobj} that
+\code{yourcast()} can read. The \code{yourprep()} function works by
+scanning either the working directory or another directory you specify
+for files beginning with the tag \sQuote{csid}. In the \sQuote{data}
+folder we scanned above, there are several files whose names consist
+of the \sQuote{csid} tag and a CSID code in the format we will specify
+to the function. These are the labels \code{yourprep()} needs to be
+able to recognize and process the files. All files should have an
+extension so that \code{yourprep()} knows how to read them; currently
+the function supports fixed-width \file{.txt} files, comma-separated
+value files, and Stata \file{.dta} files.
+
+Let's examine the first of these cross section text files,
+\file{csid204500.txt}. As we can see below, this file contains all the
+years from the first observed year to the last predicted year, with
+missing values replaced by \code{NA}s. Because it was created in the
+\R\ software, this file already has the years written in as rownames
+in a way that \R\ can read (and for this reason has only three column
+labels).
+
+\begin{verbatim}
+"rspi2" "popu2" "time"
+"1950" NA 5457 1920
+"1951" NA 6319 1921
+"1952" NA 7009 1922
+"1953" NA 7553 1923
+"1954" NA 7978 1924
+...
+"2026" NA NA 1996
+"2027" NA NA 1997
+"2028" NA NA 1998
+"2029" NA NA 1999
+"2030" NA NA 2000
+\end{verbatim}
+
+However, we expect that most users will have input that looks like the
+next file in the directory, \file{csid204505.txt}. Below we can see
+that the observation year is an extra variable rather than a rowname.
+
+\begin{verbatim}
+year rspi2 popu2 time
+1950 NA 3978 1920
+1951 NA 4091 1921
+1952 NA 4306 1922
+1953 NA 4583 1923
+1954 NA 4889 1924
+...
+2026 NA NA 1996
+2027 NA NA 1997
+2028 NA NA 1998
+2029 NA NA 1999
+2030 NA NA 2000
+\end{verbatim}
+
+If this is the case, you should set the argument \code{year.var} to
+\code{TRUE} in \code{yourprep()}; this will automatically convert the
+\sQuote{year} variable to a rowname as long as it is labeled
+\sQuote{year}.
+
+The \sQuote{data} directory also includes some of the optional files
+that we included in our \sQuote{dataobj} for the \code{chp.11.1}
+demo. The first is \file{adjacency.txt}, a list of proximity scores
+for all the possible pairs of the geographic units. The second is
+\file{cntry.codes.txt}, a list of all the CSID codes for the
+geographic units and their respective labels. We will load these using
+arguments in the \code{yourprep()} function.
+
+We're now ready to run the \code{yourprep()} function. Since the
+function already grabs all files beginning with \sQuote{csid} tag, we
+only need to specify the directory where the files are stored and the
+names of the optional files, \code{G.names} and \code{adjacency}. Note
+that we have set \code{year.var=TRUE} since one of our files has the
+observation year as a separate variable rather than as the rowname:
+
+\begin{verbatim}
+dta <- yourprep(dpath=paste(.libPaths()[1],"/YourCast/data",sep=""),
+                year.var=TRUE, sample.frame=c(1950,2000,2001,2030),
+                G.names="cntry.codes.txt", adjacency="adjacency.txt",
+                verbose=TRUE)
+\end{verbatim}
+
+We have now created a \sQuote{dataobj} called \code{dta}. Examining the
+\sQuote{dataobj}, we can see that it includes the two required elements,
+\sQuote{data} and \sQuote{index.code}, as well as two optional
+elements.
+\begin{verbatim}
+> names(dta)
+[1] "data"       "index.code" "G.names"    "adjacency" 
+\end{verbatim}
+
+Examining the \sQuote{data} element, we can see that it includes all
+the cross section files that were in the \code{dpath}:
+
+\begin{verbatim}
+> names(dta$data)
+ [1] "204500" "204505" "204510" "204515" "204520" "204525" "204530" "204535"
+ [9] "204540" "204545" "204550" "204555" "204560" "204565" "204570" "204575"
+[17] "204580"
+\end{verbatim}
+
+We're now ready for a run of \code{yourcast()}. The first run of the
+program in the \code{chp.11.1} demo file uses the Lee-Carter
+model. This model uses few of the capacities of the \YourCast\ package
+since it does no smoothing, but is good for a quick run of the
+function. Use of the smoothing options can be seen in many of the
+demos and is explained the \code{yourcast()} documentation. The code
+below produces an output object called \code{ylc} that is of class
+\sQuote{yourcast}:
+
+\begin{verbatim}
+ylc <- yourcast(formula=log(rspi2/popu2) ~ time, dataobj=dta, model="LC")
+\end{verbatim}
+
+The main output from the \code{yourcast()} function is the
+\sQuote{yhat} element of the output list, which contains the observed
+and predicted values for every cross section. This output is difficult
+to appreciate without graphics, but we can get a quick summary of our
+run of the function by typing \code{summary(ylc)}:
+
+\begin{verbatim}
+> summary(ylc)
+Model: LC 
+Number of cross sections: 17 
+Formula: log(rspi2/popu2) ~ time 
+
+Observed period: 1950-2000
+Forecast period: 2001-2030
+
+Smoothing parameters:
+ Ha.sigma  Ht.sigma Hat.sigma 
+      0.3       0.3       0.2 
+
+Geo units included:
+[1] "2045"
+
+See 'help(plot.yourcast)' for instructions on how to plot observed and predicted 'y' values
+\end{verbatim}
+
+Here we can see basic information about the output object. More
+information not printed automatically is available by typing
+\code{names(summary(ylc))}.
+
+We're now ready to plot the observed and predicted values to study the
+model output. This can be done simply by typing \code{plot(ylc)}, but
+we have added a few arguments here to enhance the graphical
+output. The argument \code{title} gives a title for the plots by
+describing the dependent variable. The argument
+\code{age.opts} allows us to pass options to the \code{age} plot in the form of a list object. For example, we can choose to not plot the predicted
+\sQuote{yhat} values in-sample through the \code{insamp.predict=FALSE} option. You can see
+more of these options by typing \code{help(plot.yourcast)}.
+
+\begin{verbatim}
+plot(ylc, title="Respiratory Infections", age.opts=list(insamp.predict=FALSE))
+\end{verbatim}
+
+Since we did not specify which type of plot we wanted, the default combination of
+\code{age} and \code{time} plots is returned.
+However, the plotting function can also do either of these
+plots separately, as well as three dimensional age-time plots, total count plots, and life expectancy at birth plots. To see these, we
+need to use the \code{plots} argument. For example, here is a call
+for the three dimensional plot:
+
+\begin{verbatim}
+plot(ylc,title="Respiratory Infections", plots="threedim")
+\end{verbatim}
+
+Finally, if your analysis includes a large number of geographic areas
+such that viewing output sequentially on the device is inconvenient,
+there an option in the plotting function to save the output for each
+geographic code as a \file{.pdf} file in the working directory rather
+than printing it to the device window. Just set \code{print="pdf"} and pass
+filename and output directory options to the function as a list object using the \code{print.args} argument.
+
+This ends the example section of the users guide. Please visit the
+help files for individual functions or send an email to the YourCast
+listserv if you have problems.
+
+
+\subsection{More Information}
+
+We have included demos that provide step-by-step instructions on how
+to reproduce to graphs in Chapters 2 and 11 of \emph{Demographic
+  Forecasting}. A list of these demos can be found by typing
+
+\begin{verbatim}
+demo(package="YourCast")
+\end{verbatim}
+
+at the command prompt. You can also access the preassembled
+\sQuote{dataobj}s used in these demos directly by typing
+
+\begin{verbatim}
+data(package="YourCast")
+\end{verbatim}. 
+
+To either run the demos or load these datasets, replace the package
+name in the respective argument with the name of the demo or dataset
+of interest; i.e., \code{demo(chp.11.1)}.  The next section goes
+through this particular demo in detail.
+
+For more information on the statistical methods implemented in this
+software, please refer to \emph{Demographic Forecasting}.
+
+\section{Reference}
+
+The following pages list the main functions in \YourCast\ with
+detailed reference information.  These can also be loaded from \R\ 
+with the standard help command, such as \code{help(yourprep)}.
+
+\include{man-yourcast}
+\include{man-yourprep}
+\include{man-plot.yourcast}
+\include{man-histograph}
+\include{man-summary.yourcast}
+\include{man-lifetable}
+\include{man-array.yourcast}
+
+\bibliographystyle{plain}
+%\bibsep=0in
+\bibliography{gk,gkpubs}
+
+\end{document}

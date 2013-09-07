@@ -1,0 +1,16 @@
+chp.2.6            Chapter 2, figure 6 with model="LC"
+chp.2.7            Chapter 2, figure 7 with model="LC"
+chp.11.1           Chapter 11, Figure 1 with models="LC" and "MAP"
+chp.11.2           Chapter 11, Figure 2 with models="LC" and "MAP"
+chp.11.3           Chapter 11, Figure 3 with model="MAP"
+chp.11.4           Chapter 11, Figure 4 with model="OLS"
+chp.11.5           Chapter 11, Figure 5 with model="OLS"
+chp.11.7           Chapter 11, Figure 7 with models="EBAYES" and "MAP"
+chp.11.8           Chapter 11, Figure 8 with models="EBAYES" and "MAP"
+chp.11.9           Chapter 11, Figure 9 with models="EBAYES" and "MAP"
+chp.11.10          Chapter 11, Figure 10 with model="MAP"
+chp.11.11          Chapter 11, Figure 11 with model="OLS"
+chp.11.12          Chapter 11, Figure 12 with model="MAP"
+chp.11.13          Chapter 11, Figure 13 with model="BAYES"
+
+

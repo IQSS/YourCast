@@ -1,0 +1,97 @@
+<html>
+<head>
+<title>YourCast Software Website</title>
+<script language='Javascript' src='/gking.js'></script></HEAD>
+
+<BODY ><script language="Javascript">displayHeader("YourCast: Time Series Cross-Sectional Forecasting with Your Assumptions")</script>
+
+<a
+href="http://www.rand.org/methodology/econ/girosi.html">Federico
+Girosi</a> and <a href="http://GKing.Harvard.edu">Gary King</a>
+<br /><br />
+
+<!-- rbuild: replace 'Version:' '</b>' version -->
+<b>Version:xxxxx</b>
+
+<table border='0' cellpadding='0' cellspacing='8'><tr><td valign='top' width='200'>
+<p> <span !style="float:left;padding:4px"> <img src="stoch.jpg"
+width="200" align="left" alt="graph"></span> 
+
+</td><td valign='top'>
+
+YourCast is (open source and free) software that makes forecasts by
+running sets of linear regressions together in a variety of
+sophisticated ways. YourCast avoids the bias that results when
+stacking datasets from separate cross-sections and assuming constant
+parameters, and the inefficiency that results from running independent
+regressions in each cross-section. The models enable you to have
+different covariates, or the same covariates with different meanings,
+in each cross-section.  You may choose from a wide variety of
+smoothing techniques, such as assuming that the separate time series
+regressions in neighboring (or "similar") countries are alike, based
+on similarites in the <em>coefficients</em> (as in other approaches)
+or in the values or trends in the <em>expected value of the dependent
+variable</em>. This approach is advantageous because prior knowledge
+almost always exists about the dependent variable, and the expected
+value is always on the same metric even when including explanatory
+variables that differ in number or meaning in each country. You can
+also decide whether to smooth over indices that are geographic,
+grouped continuous variables (such as age groups), time, or
+interactions among these. For example, you can assume that, unless
+contradicted by the data, forecasts should be relatively smooth over
+time, or that the forecast time trends should be similar in adjacent
+age groups, or even that the differences in time trends between
+adjacent age groups stay roughly similar as they vary over countries.
+
+<p>The model works with time-series-cross-sectional data but also data
+for which the time series varies over more than one cross-section such
+as log-mortality over time by age, country, sex, and cause. The
+specific notion of "smoothness" or "similarity" used in YourCast
+is also your choice. The assumptions made by the statistical model
+are therefore governed your choices, and the sophistication of those
+assumptions and the degree to which they match empirical reality are,
+for the most part, limited only by what you may know or are willing to
+assume rather than arbitrary choices embedded in a mathematical model.
+
+<p>YourCast implements the methods introduced in Federico Girosi and
+Gary King's book manuscript on <a
+href="http://gking.harvard.edu/files/abs/smooth-abs.shtml"><em>Demographic
+Forecasting</em></a>, Princeton University Press, forthcoming.  The
+present version is for those familar with R (if you're not, see <a
+href="http://gking.harvard.edu/zelig">Zelig</a>); the next version will have more extensive
+preprocessing to make data input easier, and the version after that
+will have a GUI so that knowledge of R is unnecessary.
+
+<ul>
+<li>Documentation: <a href="http://gking.harvard.edu/yourcast/docs/">Read on-line</a> or <a
+href="http://gking.harvard.edu/yourcast/docs/yourcast.pdf">Download PDF</a>
+
+<li><a
+href="http://gking.harvard.edu/yourcast/docs/Installation.html">Installation</a>
+
+<li>All questions, bugs and requests: YourCast Mailing List, <a
+href="https://lists.gking.harvard.edu/mailman/listinfo/yourcast" target="gkingext">[Un]Subscribe</a>,
+or <a href="https://lists.gking.harvard.edu/pipermail/yourcast/" target="gkingext">Browse/Search
+Archives</a>
+
+<li><a
+href="http://webapps.sph.harvard.edu/content/DeansDis.Lecture_9-29-05_2005-09-29_04-08-PM.htm"
+target="gkingext">Full Length Video introducing the book to a general
+audience without math</a> (if you don't have Real Player installed,
+you'll get audio and slides only)</li>
+
+<li>
+<span class="orange"><strong>License:</strong></span> Creative Commons
+Attribution- Noncommercial-No Derivative Works 3.0 License, for
+academic use only.</li>
+
+</ul>
+
+</td>
+</tr>
+</table>
+
+
+
+<script language="Javascript">displayFooter()</script></ul></BODY>
+</html>

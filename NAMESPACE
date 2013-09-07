@@ -1,0 +1,18 @@
+export(yourcast, yourprep, 
+       user.prompt, histograph, 
+       print.summary.yourcast,
+       print.yourprep,print.yourcast,
+       summary.yourcast, plot.yourcast, lifetable, array.yourcast)
+ 
+S3method(plot, yourcast)
+S3method(summary, yourcast)
+S3method(print, yourcast)
+S3method(print, yourprep)
+
+
+
+
+
+
+
+

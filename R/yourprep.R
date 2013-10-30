@@ -113,7 +113,7 @@ splitter <- function(string,tag,index.code) {
 
 yourprep <- function(dpath=getwd(),tag="csid",index.code="ggggaa",
                      datalist=NULL,G.names=NULL,A.names=NULL,
-                     T.names=NULL,adjacency=NULL,year.var=FALSE,
+                     T.names=NULL,proximity=NULL,year.var=FALSE,
                      sample.frame=NULL,summary=FALSE,verbose=FALSE,
 
                      #lagging utility
@@ -282,8 +282,8 @@ in R workspace.",sep=""))
            !is.null(A.names),
            length(grep(paste(tag,".T.names",sep=""),dir(dpath)))==1,
            !is.null(T.names),
-           length(grep(paste(tag,".adjacency",sep=""),dir(dpath)))==1,
-           !is.null(adjacency))) {
+           length(grep(paste(tag,".proximity",sep=""),dir(dpath)))==1,
+           !is.null(proximity))) {
                  cat("Loading auxiliary files...\n")}}
  
   if (!is.null(G.names))
@@ -307,12 +307,17 @@ in R workspace.",sep=""))
        readerlite(dir(dpath)[grep(paste(tag,".T.names",sep=""),dir(dpath))],
                   dpath,verbose)}
 
-  if (!is.null(adjacency))
-    {dataobj$adjacency <- readerlite(adjacency,dpath,verbose)}
-  else if(length(grep(paste(tag,".adjacency",sep=""),dir(dpath)))==1)
-    {dataobj$adjacency <-
-       readerlite(dir(dpath)[grep(paste(tag,".adjacency",sep=""),dir(dpath))],
+  if (!is.null(proximity))
+    {dataobj$proximity <- readerlite(proximity,dpath,verbose)}
+  else if(length(grep(paste(tag,".proximity",sep=""),dir(dpath)))==1)
+    {dataobj$proximity <-
+       readerlite(dir(dpath)[grep(paste(tag,".proximity",sep=""),dir(dpath))],
                   dpath,verbose)}
+  
+  # make sure that proximity is a numeric matrix
+  if(!is.null(dataobj$proximity)){
+  	dataobj$proximity <- data.matrix(dataobj$proximity)
+   }
 
   cat("...Finished\n")
 

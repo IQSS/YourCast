@@ -26,7 +26,7 @@ $(PKGSRC).pdf: $(PKGSRC).tex Rd2tex
 
 build:	
 	cd ..;\
-	R CMD build $(PKGSRC) --resave-data
+	R CMD build $(PKGSRC)
 
 install: build
 	cd ..;\

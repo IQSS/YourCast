@@ -19,7 +19,6 @@
 \usepackage{makeidx}
 
 \usepackage{verbatim}
-% \usepackage{epsf}
 \usepackage{url}
 \usepackage{html}
 \usepackage{dcolumn}
@@ -325,17 +324,16 @@ extension \file{.txt}, by typing:
 
 \begin{verbatim}
 > dir(paste(.libPaths()[1],"/YourCast/data",sep=""))
- [1] "adjacency.txt"    "chp.11.10.RData"  "chp.11.11.RData"  "chp.11.12.RData"
- [5] "chp.11.13.RData"  "chp.11.1.RData"   "chp.11.2.RData"   "chp.11.3.RData"
- [9] "chp.11.4.RData"   "chp.11.5.RData"   "chp.11.7.1.RData" "chp.11.7.2.RData"
-[13] "chp.11.8.1.RData" "chp.11.8.2.RData" "chp.11.8.3.RData" "chp.11.9.1.RData"
-[17] "chp.11.9.2.RData" "chp.2.6.1.RData"  "chp.2.6.2.RData"  "chp.2.7.1.RData"
-[21] "chp.2.7.2.RData"  "chp.2.7.3.RData"  "cntry.codes.txt"  "cs2s204545.txt"
-[25] "csid204500.txt"   "csid204505.txt"   "csid204510.txt"   "csid204515.txt"
-[29] "csid204520.txt"   "csid204525.txt"   "csid204530.txt"   "csid204535.txt"
-[33] "csid204540.txt"   "csid204545.txt"   "csid204550.txt"   "csid204555.txt"
-[37] "csid204560.txt"   "csid204565.txt"   "csid204570.txt"   "csid204575.txt"
-[41] "csid204580.txt"
+ [1] "chp.11.1.RData"     "chp.11.10.RData"    "chp.11.11.RData"    "chp.11.12.RData"   
+ [5] "chp.11.13.RData"    "chp.11.2.RData"     "chp.11.3.RData"     "chp.11.4.RData"    
+ [9] "chp.11.5.RData"     "chp.11.7.1.RData"   "chp.11.7.2.RData"   "chp.11.8.1.RData"  
+[13] "chp.11.8.2.RData"   "chp.11.8.3.RData"   "chp.11.9.1.RData"   "chp.11.9.2.RData"  
+[17] "chp.2.6.1.RData"    "chp.2.6.2.RData"    "chp.2.7.1.RData"    "chp.2.7.2.RData"   
+[21] "chp.2.7.3.RData"    "cntry.codes.txt"    "csid204500.txt"     "csid204505.txt" 
+[25] "csid204510.txt"     "csid204515.txt"     "csid204520.txt"     "csid204525.txt" 
+[29] "csid204530.txt"     "csid204535.txt"     "csid204540.txt"     "csid204545.txt" 
+[33] "csid204550.txt"     "csid204555.txt"     "csid204560.txt"     "csid204565.txt" 
+[37] "csid204570.txt"     "csid204575.txt"     "csid204580.txt"     "proximity.txt"  
 
 \end{verbatim}. 
 
@@ -405,8 +403,8 @@ If this is the case, you should set the argument \code{year.var} to
 
 The \sQuote{data} directory also includes some of the optional files
 that we included in our \sQuote{dataobj} for the \code{chp.11.1}
-demo. The first is \file{adjacency.txt}, a list of proximity scores
-for all the possible pairs of the geographic units. The second is
+demo. The first is \file{proximity.txt}, a list of proximity scores
+for pairs of the geographic units. The second is
 \file{cntry.codes.txt}, a list of all the CSID codes for the
 geographic units and their respective labels. We will load these using
 arguments in the \code{yourprep()} function.
@@ -414,14 +412,14 @@ arguments in the \code{yourprep()} function.
 We're now ready to run the \code{yourprep()} function. Since the
 function already grabs all files beginning with \sQuote{csid} tag, we
 only need to specify the directory where the files are stored and the
-names of the optional files, \code{G.names} and \code{adjacency}. Note
+names of the optional files, \code{G.names} and \code{proximity}. Note
 that we have set \code{year.var=TRUE} since one of our files has the
 observation year as a separate variable rather than as the rowname:
 
 \begin{verbatim}
 dta <- yourprep(dpath=paste(.libPaths()[1],"/YourCast/data",sep=""),
                 year.var=TRUE, sample.frame=c(1950,2000,2001,2030),
-                G.names="cntry.codes.txt", adjacency="adjacency.txt",
+                G.names="cntry.codes.txt", proximity="proximity.txt",
                 verbose=TRUE)
 \end{verbatim}
 
@@ -431,7 +429,7 @@ We have now created a \sQuote{dataobj} called \code{dta}. Examining the
 elements.
 \begin{verbatim}
 > names(dta)
-[1] "data"       "index.code" "G.names"    "adjacency" 
+[1] "data"       "index.code" "G.names"    "proximity" 
 \end{verbatim}
 
 Examining the \sQuote{data} element, we can see that it includes all

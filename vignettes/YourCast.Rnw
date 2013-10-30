@@ -320,7 +320,7 @@ designed to help users construct the \sQuote{dataobj} list easily.
 We have stored the original files we used to create the \sQuote{dataobj}
 returned by typing \code{data(chp.11.1)} in \textsc{Yourcast}'s
 \sQuote{data} folder. You can view these files, which have the
-extension \file{.txt.xz} since they are compressed, by typing:
+extension \file{.txt}, by typing:
 
 \begin{verbatim}
 > dir(paste(.libPaths()[1],"/YourCast/data",sep=""))
@@ -329,11 +329,11 @@ extension \file{.txt.xz} since they are compressed, by typing:
  [9] "chp.11.5.RData"     "chp.11.7.1.RData"   "chp.11.7.2.RData"   "chp.11.8.1.RData"  
 [13] "chp.11.8.2.RData"   "chp.11.8.3.RData"   "chp.11.9.1.RData"   "chp.11.9.2.RData"  
 [17] "chp.2.6.1.RData"    "chp.2.6.2.RData"    "chp.2.7.1.RData"    "chp.2.7.2.RData"   
-[21] "chp.2.7.3.RData"    "cntry.codes.txt.gz" "csid204500.txt.xz"  "csid204505.txt.xz" 
-[25] "csid204510.txt.xz"  "csid204515.txt.xz"  "csid204520.txt.xz"  "csid204525.txt.xz" 
-[29] "csid204530.txt.xz"  "csid204535.txt.xz"  "csid204540.txt.xz"  "csid204545.txt.xz" 
-[33] "csid204550.txt.xz"  "csid204555.txt.xz"  "csid204560.txt.xz"  "csid204565.txt.xz" 
-[37] "csid204570.txt.xz"  "csid204575.txt.xz"  "csid204580.txt.xz"  "proximity.txt.xz"  
+[21] "chp.2.7.3.RData"    "cntry.codes.txt"    "csid204500.txt"     "csid204505.txt" 
+[25] "csid204510.txt"     "csid204515.txt"     "csid204520.txt"     "csid204525.txt" 
+[29] "csid204530.txt"     "csid204535.txt"     "csid204540.txt"     "csid204545.txt" 
+[33] "csid204550.txt"     "csid204555.txt"     "csid204560.txt"     "csid204565.txt" 
+[37] "csid204570.txt"     "csid204575.txt"     "csid204580.txt"     "proximity.txt"  
 
 \end{verbatim}. 
 
@@ -355,7 +355,7 @@ the function supports fixed-width \file{.txt} files, comma-separated
 value files, and Stata \file{.dta} files.
 
 Let's examine the first of these cross section text files,
-\file{csid204500.txt.xz}. As we can see below, this file contains all the
+\file{csid204500.txt}. As we can see below, this file contains all the
 years from the first observed year to the last predicted year, with
 missing values replaced by \code{NA}s. Because it was created in the
 \R\ software, this file already has the years written in as rownames
@@ -378,7 +378,7 @@ labels).
 \end{verbatim}
 
 However, we expect that most users will have input that looks like the
-next file in the directory, \file{csid204505.txt.xz}. Below we can see
+next file in the directory, \file{csid204505.txt}. Below we can see
 that the observation year is an extra variable rather than a rowname.
 
 \begin{verbatim}
@@ -403,9 +403,9 @@ If this is the case, you should set the argument \code{year.var} to
 
 The \sQuote{data} directory also includes some of the optional files
 that we included in our \sQuote{dataobj} for the \code{chp.11.1}
-demo. The first is \file{proximity.txt.xz}, a list of proximity scores
+demo. The first is \file{proximity.txt}, a list of proximity scores
 for pairs of the geographic units. The second is
-\file{cntry.codes.txt.gz}, a list of all the CSID codes for the
+\file{cntry.codes.txt}, a list of all the CSID codes for the
 geographic units and their respective labels. We will load these using
 arguments in the \code{yourprep()} function.
 
@@ -419,7 +419,7 @@ observation year as a separate variable rather than as the rowname:
 \begin{verbatim}
 dta <- yourprep(dpath=paste(.libPaths()[1],"/YourCast/data",sep=""),
                 year.var=TRUE, sample.frame=c(1950,2000,2001,2030),
-                G.names="cntry.codes.txt.gz", proximity="proximity.txt.xz",
+                G.names="cntry.codes.txt", proximity="proximity.txt",
                 verbose=TRUE)
 \end{verbatim}
 

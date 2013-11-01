@@ -268,14 +268,14 @@ setwd(system.file("data",package="YourCast"))
 # into label in each cs. Use sample.frame argument for all diagnostics
 # to work
  
-dta <- yourprep(G.names="cntry.codes.txt", proximity="proximity.txt",
+dta <- yourprep(G.names="cntry.codes.txt.gz", proximity ="proximity.txt.gz",
 year.var=TRUE,verbose=TRUE,sample.frame=c(1950,2000,2001,2030))
 
 
 # With summary output (means of variables in each cross section) 
 
 %\dontrun{
-dta <- yourprep(G.names="cntry.codes.txt", proximity ="proximity.txt",
+dta <- yourprep(G.names="cntry.codes.txt.gz", proximity ="proximity.txt.gz",
 year.var=TRUE,summary=TRUE)
 %}
 
@@ -295,7 +295,7 @@ datalist <- list("123456"=csid204545,"234567"=csid204550,
 
 # Verbose option turned on and datalist argument added 
 
-dta <- yourprep(G.names="cntry.codes.txt", proximity="proximity.txt",
+dta <- yourprep(G.names="cntry.codes.txt.gz", proximity ="proximity.txt.gz",
 year.var=TRUE,verbose=TRUE,datalist=datalist)
 
 # Setting working directory back

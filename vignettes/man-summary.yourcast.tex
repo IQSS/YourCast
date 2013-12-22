@@ -1,0 +1,61 @@
+\HeaderA{summary.yourcast}{Summarize yourcast output}{summary.yourcast}
+%
+\begin{Description}\relax
+yourcast class summary function
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+## S3 method for class 'yourcast'
+summary(object, ...)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{object}] \code{\LinkA{yourcast}{yourcast}} output object to be summarized
+\item[\code{...}] Arguments to be passed to or from other methods.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A list of summary objects of class `summary.yourcast':
+
+\begin{ldescription}
+\item[\code{sample.frame}] Four element vector containing, in order,
+the start and end time periods to be used for the observed
+data and the start and end time periods to be forecast
+
+\item[\code{params}] Vector. Smoothing parameters used in model.
+
+\item[\code{model}] String. Estimation technique used.
+
+\item[\code{formula}] Language. Formula used in analysis.
+
+\item[\code{numcs}] Integer. Number of cross sections used in analysis.
+
+\item[\code{cntry.codes}] Vector. Unique geographical codes of cross
+sections used in analysis.
+
+\item[\code{cntry.names}] Vector. If \code{G.names} dataframe submitted
+to \code{\LinkA{yourcast}{yourcast}}, the names of all unique geographical
+codes of cross sections used in analysis.
+
+\item[\code{coef}] List. List of matrices with estimated coefficents for
+each cross section. For Lee-Carter models, only one set of
+coefficents calculated. Standard errors are not calculated for
+these coefficients.
+\end{ldescription}
+\end{Value}
+%
+\begin{Author}\relax
+Jon Bischof \email{jbischof@fas.harvard.edu}
+\end{Author}
+%
+\begin{References}\relax
+\url{http://gking.harvard.edu/yourcast}
+\end{References}
+%
+\begin{SeeAlso}\relax
+\code{\LinkA{yourcast}{yourcast}},\code{\LinkA{print.summary.yourcast}{print.summary.yourcast}} 
+\end{SeeAlso}

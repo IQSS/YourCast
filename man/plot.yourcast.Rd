@@ -17,7 +17,7 @@ the specified directory.}
 
 \item{x}{A \code{\link{yourcast}} output object.}
 
-\item{plots}{Vector of strings specifying the plot types to be generated. The available plots are age profile (\code{"age"}), time profile (\code{"time"}), 3D age/time profile (\code{"threedim"}), total counts by year (\code{"totcounts"}), and life expectancy at birth (\code{"ex0"}). The order in which the plots are specified is the order in which they are generated in the device. A maximum of 3 plot types is allowed. Default: \code{c("age","time")}.}
+\item{plots}{Vector of strings specifying the plot types to be generated. The available plots are age profile (\code{"age"}), time profile (\code{"time"}), 3D age/time profile (\code{"threedim"}), total counts by year (\code{"totcount"}), and life expectancy at birth (\code{"ex0"}). The order in which the plots are specified is the order in which they are generated in the device. A maximum of 3 plot types is allowed. Default: \code{c("age","time")}.}
 
 \item{title}{String. Main title for the plots. Concatenated with country name if \code{dataobj$G.names} exists. Default: \code{NULL}.}
 
@@ -74,7 +74,7 @@ Options for the age profile, time profile, total count, and life expectancy at b
 \item{\code{ylab}}{String specifying the y-axis label. Default is \code{"Data and
     Forecasts"} for \sQuote{age} plots and \code{"Forecasts"} for \sQuote{time} plots.}
     
-\item{\code{insamp.obs}}{Logical. Should the observed data be plotted? Default for \sQuote{age}, \sQuote{totcounts}, \sQuote{ex0} is \code{TRUE}; default for  \sQuote{time} is \code{FALSE}.}
+\item{\code{insamp.obs}}{Logical. Should the observed data be plotted? Default for \sQuote{age}, \sQuote{totcount}, \sQuote{ex0} is \code{TRUE}; default for  \sQuote{time} is \code{FALSE}.}
 
 \item{\code{insamp.predict}}{Logical. Should the predicted data be plotted for the in-sample period? Default: \code{TRUE}.}
 }

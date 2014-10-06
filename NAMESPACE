@@ -1,3 +1,5 @@
+import(grid, gridExtra, foreign, ggplot2, lattice, reshape2)
+
 export(yourcast, yourprep, 
        user.prompt, histograph, 
        print.summary.yourcast,

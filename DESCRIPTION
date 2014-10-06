@@ -1,6 +1,6 @@
 Package: YourCast
 Version: 1.6.1
-Date: 2013-09-01
+Date: 2014-10-01
 Title: Forecasting age-sex-country-cause mortality rates   
 Author:  Federico Girosi <girosi@rand.org>  
          Gary King <king@harvard.edu>
@@ -8,7 +8,8 @@ Author:  Federico Girosi <girosi@rand.org>
 	 Jon Bischof <jbischof@fas.harvard.edu>
 	 Konstantin Kashin <kkashin@fas.harvard.edu>
 Maintainer: Konstantin Kashin <kkashin@fas.harvard.edu>
-Depends: R (>= 2.15.0), foreign, ggplot2, reshape2, gridExtra, lattice
+Depends: R (>= 2.15.0), ggplot2
+Imports: grid, gridExtra, lattice, foreign, reshape2
 Description: Software accompanying the book by Girosi and King: Demographic Forecasting. 
 	Four different forecast models (i.e, OLS, LC, POISSON, and MAP).
 	The driver of the simulation is function mortality.driver(), 

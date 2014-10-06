@@ -37,5 +37,6 @@ yc.array <- array.yourcast(ylc.allc)
 dimnames(yc.array)
 
 # predicted mortality rates (observed in-sample and predicted out-of-sample)
-yc.array[,,"comb"]
+# for geographic area '4150'
+yc.array[["4150"]][,,"comb"]
 } %%% end of examples

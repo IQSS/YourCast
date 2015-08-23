@@ -1,0 +1,7 @@
+inst/doc
+
+vignettes/.Rhistory
+
+*.timestamp
+
+*.history

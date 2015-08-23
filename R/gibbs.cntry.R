@@ -477,7 +477,9 @@ build.super.cntry.mat  <- function(omega,agch,ctr){
 ## Last modified: 05/01/2004
 ## 
 ## ************************************************************************
-  make.beta.cn.lst <- function(beta, agech,cntrych){
+ 
+ 
+ make.beta.cn.lst <- function(beta, agech,cntrych){
 ### find the indeces to split beta.bar.prior according to 
     finx <- lapply(1:length(cntrych), function(n, cntrych, beta){
     ch <- cntrych[n]
@@ -492,7 +494,9 @@ build.super.cntry.mat  <- function(omega,agch,ctr){
     bl <-  kronecker(cntrych,agech,paste,sep="")
     beta.indx <-as.list(finx)
     names(beta.indx) <- bl
-   return(beta.indx)}
+   return(beta.indx)
+  
+  }
 
 ###
 ##################################################################

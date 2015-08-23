@@ -421,9 +421,13 @@ yourcast <- function(formula=NULL, dataobj=NULL,
 
   if(length(count.cntry) >  1 || length(ix) > 0 || bool){
    
-    m <- try(switch(modeltopass, OLS=ols(env.base),LC=lc(env.base),POISSON=glm.poisson(env.base),
-                       MAP=cxc(ebase=env.base),
-                       BAYES=gibbs.sampler(), model="", NULL), silent=F);
+    m <- try(switch(modeltopass, 
+    						   OLS=ols(env.base),
+    						   LC=lc(env.base),
+    						   POISSON=glm.poisson(env.base),
+                       		   MAP=cxc(ebase=env.base),
+                       		   BAYES=gibbs.sampler()
+                       		   ), silent=F);
     params <- NULL
   }else{
     ### runs one for one cntry and model MAP
@@ -1742,3 +1746,5 @@ messout <- function(str=NULL, verb=TRUE, obj=NULL){
          
       
   }
+  
+

@@ -7,7 +7,7 @@ Read the YourCast [vignette][] for additional details.
 ## How to install
 
 ### Installation requirements
-`YourCast` requires [R][] version 2.15.0 or higher.
+`YourCast` requires [R][] version 3.2.1 or higher.
 
 ### Installation from CRAN
 ```R

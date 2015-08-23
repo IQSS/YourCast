@@ -1,0 +1,409 @@
+---
+title: "YourCast: Software for Simultaneous Time Series Forecasting with Your Assumptions"
+author: "Federico Girosi, Gary King, and Konstantin Kashin"
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+bibliography: YourCast.bib
+vignette: >
+  %\VignetteIndexEntry{YourCast}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+```{r setup, echo=FALSE}
+# global chunk options
+knitr::opts_chunk$set(cache = FALSE, collapse=TRUE, fig.path = "figures/", dev = "pdf")
+```
+
+# Introduction
+`YourCast` implements the methods for demographic forecasting
+discussed in @GirKin08. Please read at least Chapter 1 of the book before attempting
+to use `YourCast`.
+
+At its most basic, `YourCast` runs linear regressions, and estimates
+the usual quantities of interest, such as forecasts, causal effects,
+etc.  The benefit of running `YourCast` over standard linear
+regression software comes from the improved performance due to
+estimating sets of regressions together in sophisticated ways.
+
+`YourCast` avoids the bias that results from stacking datasets from
+separate cross-sections and assuming constant parameters, and the
+inefficiency that results from running independent regressions in each
+cross-section.  `YourCast` instead allows you to tie the different
+regressions together probabilistically in ways consistent with what
+you know about the world and your data.  The model allows you to have
+different covariates with different meanings measured in different
+cross-sections.
+
+For example, one might assume that the separate time series
+regressions in neighboring (or "similar") countries are more alike.
+Our approach is fully Bayesian, but you need not assume as the
+standard Bayesian approach does that the *coefficients* (which
+are never observed) in neighboring countries are similar.  `YourCast` 
+makes it possible to assume instead that neighboring countries are
+similar in their values or trends in the *expected value of the dependent variable*.
+This approach is advantageous because prior
+knowledge almost always exists about the dependent variable (such as
+that the age profile of mortality looks like the Nike swoosh), and the
+expected value is always on the same metric even when including
+explanatory variables that differ in number or meaning in each
+country.
+
+The power of `YourCast` to improve forecasts comes from allowing one
+to smooth in many sophisticated ways, in addition to across countries.
+You can thus decide whether to smooth over indices that are
+geographic, grouped versions of underlying continuous variables (such
+as age groups), time, or interactions among these.  For example, you
+can assume that, unless contradicted by the data, forecasts should be
+relatively smooth over time, or that the forecast time trends should
+be similar in adjacent age groups, or even that the differences in
+time trends between adjacent age groups stay roughly similar as they
+vary over countries.  The model works with time-series-cross-sectional
+(TS-CS) data but also data for which the time series varies over more
+than one cross-section (TS-CS-CS-CS $\ldots$) data such as log-mortality
+over time by age, country, sex, and cause).   The specific notion of
+"smoothness" or "similarity" used in `YourCast` is also your
+choice.  The assumptions made by the statistical model are therefore
+governed your choices, and the sophistication of those assumptions and
+the degree to which they match empirical reality are, for the most
+part, limited only by what you may know or are willing to assume
+rather than arbitrary choices embedded in a mathematical model.  In
+our work, we have found that `YourCast` makes it possible to improve
+forecasts well beyond that possible with traditional regression (or
+autoregression) strategies, although of course we make no promises
+about the future except that your performance may vary.
+
+# Installation
+`YourCast` requires the current version of `R` as well as the
+packages `foreign`, `lattice`, `ggplot2`, `reshape2`, `grid`, and `gridExtra`, which are loaded automatically by `YourCast`.  `YourCast` can be installed from the `CRAN` repository:
+
+```{r install_cran, eval=FALSE}
+install.packages("YourCast")
+```
+
+You can also install the latest version of the package directly from GitHub using the `devtools` package:
+```{r install_git, echo=TRUE, eval=FALSE}
+devtools::install_github("IQSS/YourCast")
+```
+
+After installation, attach the package as usual:
+```{r load, echo=TRUE, eval=TRUE, message = FALSE}
+library(YourCast)
+```
+
+# User's Guide
+
+YourCast works with multiple data sets in the same model.  Thus, we
+require a more complicated data structure than the usual single data
+frame used for most statistical models in `R`.  Although you can create
+this object yourself and input it directly into the `yourcast()`
+function, it is normally easier to use the tools we created to build
+this data structure automatically.  To do this requires following
+three steps:
+
+1. labeling and organizing the data in a format we
+describe
+2. running the `yourprep()` function to prepare your
+data, create an input object in the format we need; and load it into
+`R` 
+3. running the `yourcast()` function to generate
+forecasts.  
+
+We describe these steps in the following subsections, and
+follow it with a detailed example that illustrates all steps from
+start to end.
+
+## Data Preparations
+`YourCast` operates on time series cross-sectional data indexed by (1)
+a time period such as a year, (2) a grouped continuous variable such
+as an age group, and (3) a spatial or geographic variable such as
+geographic region or country.  To fix ideas, we refer to these as
+time, age, and geography, respectively, but obviously they may change
+in other applications.  (Either the age or geography indexes, but not
+both, may be dropped if desired.)  We require a single dependent
+variable, such as mortality rates, to be the same and have the same
+meaning for all units [see @GirKin08, Section 8.4]. Covariates may differ in number, meaning, and content across both age and geography.
+
+Thus, `YourCast` analyzes a set of data sets, each defined for one
+cross-sectional unit indexed by age and/or geography.  Inside the data
+set corresponding to each cross-sectional unit is a time series with
+measures on the dependent variable and the covariates observed in this
+cross section.  An example would be an annual time series (say
+1952-1996) with the dependent variable of mortality rates and several
+covariates, all within the cross-section of 15-20 year olds in Uganda.
+All cross-sections should have the same time indices (1952-1996),
+possibly with some different overlapping observation periods, the same
+dependent variable, and covariates that are the same, completely
+different, or overlapping from cross-section to cross-section.
+
+All the individual cross-section data sets (each containing a time
+series) must be on in a single subdirectory on disk in fixed width
+text files (`.txt`), comma separated value files (`.csv`),
+or Stata data files (`.dta`).  (Alternatively, they may be in
+memory, in your `R` workspace.)  Each file must be named with one
+string in three parts: an alphanumeric tag of the user's choice, a
+geography code of between zero (for no geography index) and four
+digits, and an age group code of between zero (for no age group index)
+to four digits.  For example, if you have observations on cancer
+deaths for age group 45 (which might represent 45-50 year olds) for
+U.S. citizens (e.g., geography code `"2450"`), you may decide to
+choose tag `'cancer'`.  We would add a file extension as well and so
+if the data are in a plain text file, we put these elements together
+and the file name would be `cancer245045.txt`.  
+
+So we can understand your coding scheme, include an extra file in the
+same directory called `tag.index.code`, where `tag` is the
+actual alphanumeric tag you chose (not the word t-a-g).  For the
+example above, the filename would be `cancer.index.code`.  The
+contents of the file should be 0--4 letters `g` followed by 0--4
+letters `a`.  In the example above, the entire contents of the
+file is: `ggggaa`.
+
+Optionally, you may also add files that contain labels for each of the
+time, age, and geography codes.  If these are included, they will make
+text and graphics output easier to interpret (and they may be useful
+documentation for you separate from yourcast).  The files are
+`tag.T.names` for time periods, `tag.A.names` for age
+groups, and `tag.G.names` for geographic regions, where again
+"tag" is your chosen alphanumeric tag.  The contents of each file
+should be ASCII text with all valid numerical codes in the first
+column and a corresponding label in the second column.  Include column
+labels in the first row.  So for geography, the second column might be
+country names and the columns would be labeled "region" and
+"name".  If the codes are interpretable as is, such as is often the
+case for age groups and time periods, then you can omit the
+corresponding file.
+
+Finally, if you wish to smooth over geographic regions, which the
+`"map"` and `"bayes"` methods allow, you must also include a
+file called `tag.proximity.txt` where `tag` is your chosen
+alphanumeric tag and `.txt` is used for text files but can
+also be used with comma separated files (`.csv`), or Stata data
+files (`.dta`).  The larger the proximity score, the more
+proximate that pair of countries is in the prior; a zero element means
+the two geographic areas are unrelated, and the diagonal is ignored.
+Each row of the `proximity` file has three columns, consisting of
+geographic codes for two countries followed by a score indicating the
+proximity of the two geographic regions; please include column labels.
+For convenience, geographic regions that are unrelated (and would have
+zero entries in the symmetric matrix) may be omitted from
+`proximity`.  In addition, `proximity` may include rows
+corresponding to geographic regions not included in the present
+analysis.
+
+## Loading in the Data
+
+We load in all the data described in the previous section at once by
+using the function `yourprep()`.  The only required argument is
+the chosen alphanumeric tag (and the subdirectory name if its not the
+working directory).  The program will then attempt to load all files
+in that directory beginning with the chosen tag and will ignore the
+rest.  Then run the function.  For example:
+
+```{r loaddata, eval=FALSE}
+ydata <- yourprep(tag="cancerMales")
+```
+
+The output object `ydata` (of class`"yourprep"`) now includes all
+the data and associated information needed for making forecasts.
+
+## Making Forecasts
+
+To make forecasts, we require the data object, name the variables with
+a standard `R` formula, and the model.  A regression is estimated for
+each cross section (tied together by any chosen priors), and so an
+explanatory variable listed in the formula is used for a particular
+cross-section if it is in the formula and it is present in that
+cross-section's data set.  (That is, a variable not measured for a
+cross-section is dropped only for that cross-section.)  As an example:
+
+```{r forecast, eval=FALSE}
+ylc <- yourcast(formula=log(rspi2/popu2) ~ time, dataobj=dta, model="LC", verbose=FALSE)
+```
+
+Finally, the output object `ylc` (of class `"yourcast"`) can be
+plotted with function `plot.yourcast(ylc)` summarized with
+function `summarize(ylc)`, or accessed directly (use
+`names(ylc)` to see the contents).
+
+# Example
+We now reconstruct the demo `chp.11.1` from start to finish to
+illustrate the capabilities of the `YourCast` software and provide
+further illustration to the user on how to take advantage of them.
+
+Most users will not have their data in a format easily readable by
+`yourcast()`. Thus for this example we will start with the raw
+`.txt` files and take advantage of the `yourprep()` software
+designed to help users construct the `'dataobj'` list easily.
+
+We have stored the original files we used to create the `'dataobj'`
+returned by typing `data(chp.11.1)` in YourCast's
+`'extdata'` folder. You can view all the data files in this folder by typing:
+
+```{r seedata2, eval=TRUE}
+dir(system.file("extdata", package = "YourCast"))
+```
+
+The function `yourprep()` in the `YourCast` package is designed to
+help you turn these raw files into a `'dataobj'` that
+`yourcast()` can read. The `yourprep()` function works by
+scanning either the working directory or another directory you specify
+for files beginning with the tag `'csid'`. In the `'data'`
+folder we scanned above, there are several files whose names consist
+of the `'csid'` tag and a CSID code in the format we will specify
+to the function. These are the labels `yourprep()` needs to be
+able to recognize and process the files. All files should have an
+extension so that `yourprep()` knows how to read them; currently
+the function supports fixed-width `.txt` files, comma-separated
+value files, and Stata `.dta` files.
+
+Let's examine the first of these cross section text files,
+`csid204500.txt`. As we can see below, this file contains all the
+years from the first observed year to the last predicted year, with
+missing values replaced by `NA`s. Because it was created in the
+`R` software, this file already has the years written in as rownames
+in a way that `R` can read (and for this reason has only three column
+labels).
+
+```{r csid204500, echo=FALSE, eval=TRUE}
+csid204500 <- read.table(system.file("extdata", "csid204500.txt", package = "YourCast"), header=T)
+head(csid204500)
+```
+
+However, we expect that most users will have input that looks like the
+next file in the directory, `csid204505.txt`. Below we can see
+that the observation year is an extra variable rather than a rowname.
+```{r csid204505, echo=FALSE, eval=FALSE}
+csid204505 <- read.table(system.file("extdata", "csid204505.txt", package = "YourCast"), header=T)
+head(csid204505)
+```
+
+If this is the case, you should set the argument `year.var` to
+`TRUE` in `yourprep()`; this will automatically convert the
+`'year'` variable to a rowname as long as it is labeled
+`'year'`.
+
+The `'data'` directory also includes some of the optional files
+that we included in our `'dataobj'` for the `chp.11.1`
+demo. The first is `proximity.txt`, a list of proximity scores
+for pairs of the geographic units. The second is
+`cntry.codes.txt`, a list of all the CSID codes for the
+geographic units and their respective labels. We will load these using
+arguments in the `yourprep()` function.
+
+We're now ready to run the `yourprep()` function. Since the
+function already grabs all files beginning with `'csid'` tag, we
+only need to specify the directory where the files are stored and the
+names of the optional files, `G.names` and `proximity`. Note
+that we have set `year.var=TRUE` since one of our files has the
+observation year as a separate variable rather than as the rowname. We set the directory to the `data` subdirectory of the `YourCast` package. Note that if the package is installed in the default `R` library, you can instead set `dpath` to `file.path(.Library,"YourCast","data")`.
+
+```{r yourprep, echo=TRUE, eval=TRUE}
+dta <- yourprep(dpath=system.file("extdata", package="YourCast"),
+                year.var=TRUE, sample.frame=c(1950,2000,2001,2030),
+                G.names="cntry.codes.txt", proximity="proximity.txt",
+                verbose=FALSE)
+```
+
+We have now created a `'dataobj'` called `dta`. Examining the
+`'dataobj'`, we can see that it includes the two required elements,
+`'data'` and `'index.code'`, as well as two optional
+elements.
+
+```{r examine_yourprep1, echo=TRUE, eval=TRUE}
+names(dta)
+```
+
+Examining the `'data'` element, we can see that it includes all
+the cross section files that were in the `dpath`:
+
+```{r examine_yourprep2, echo=TRUE, eval=TRUE}
+names(dta$data)
+```
+
+We're now ready for a run of `yourcast()`. The first run of the
+program in the `chp.11.1` demo file uses the Lee-Carter
+model. This model uses few of the capacities of the `YourCast` package
+since it does no smoothing, but is good for a quick run of the
+function. Use of the smoothing options can be seen in many of the
+demos and is explained the `yourcast()` documentation. The code
+below produces an output object called `ylc` that is of class
+`'yourcast'`:
+
+```{r yourcast, echo=TRUE, eval=TRUE, message=FALSE}
+ylc <- yourcast(formula=log(rspi2/popu2) ~ time, dataobj=dta, model="LC")
+```
+
+The main output from the `yourcast()` function is the
+`'yhat'` element of the output list, which contains the observed
+and predicted values for every cross section. This output is difficult
+to appreciate without graphics, but we can get a quick summary of our
+run of the function by typing `summary(ylc)`:
+
+```{r summary_yourcast, echo=TRUE, eval=TRUE}
+summary(ylc)
+```
+
+Here we can see basic information about the output object. More
+information not printed automatically is available by typing
+`names(summary(ylc))`.
+
+We're now ready to plot the observed and predicted values to study the
+model output. This can be done simply by typing `plot(ylc)`, but
+we have added a few arguments here to enhance the graphical
+output. The argument `title` gives a title for the plots by
+describing the dependent variable. The argument
+`age.opts` allows us to pass options to the `age` plot in the form of a list object. For example, we can choose to not plot the predicted
+`'yhat'` values in-sample through the `insamp.predict=FALSE` option. You can see
+more of these options by typing `help(plot.yourcast)`.
+
+```{r plot, eval=TRUE, fig.keep='all', fig.width=10, fig.height=5, out.width='\\textwidth'}
+plot(ylc, title="Respiratory Infections", age.opts=list(insamp.predict=FALSE))
+```
+
+Since we did not specify which type of plot we wanted, the default combination of
+`age` and `time` plots is returned.
+However, the plotting function can also do either of these
+plots separately, as well as three dimensional age-time plots, total count plots, and life expectancy at birth plots. To see these, we
+need to use the `plots` argument. For example, here is a call
+for the three dimensional plot:
+
+```{r plot3d, eval=TRUE, fig.width=5, fig.height=5, out.width='\\textwidth'}
+plot(ylc,title="Respiratory Infections", plots="threedim")
+```
+
+Finally, if your analysis includes a large number of geographic areas
+such that viewing output sequentially on the device is inconvenient,
+there an option in the plotting function to save the output for each
+geographic code as a `.pdf` file in the working directory rather
+than printing it to the device window. Just set `print="pdf"` and pass
+filename and output directory options to the function as a list object using the `print.args` argument.
+
+This ends the example section of the users guide. Please visit the
+help files for individual functions or send an email to the YourCast
+listserv if you have problems.
+
+## More Information
+We have included demos that provide step-by-step instructions on how
+to reproduce to graphs in Chapters 2 and 11 of *Demographic Forecasting*. 
+A list of these demos can be found by typing:
+  
+```{r demo, eval=FALSE}
+demo(package="YourCast")
+```
+
+You can also access the preassembled
+`'dataobj'`s used in these demos directly by typing:
+
+```{r seedata3, eval=FALSE}
+data(package="YourCast")
+```
+
+To either run the demos or load these datasets, replace the package
+name in the respective argument with the name of the demo or dataset
+of interest; i.e., `demo(chp.11.1)`.  The next section goes
+through this particular demo in detail.
+
+For more information on the statistical methods implemented in this
+software, please refer to *Demographic Forecasting*.
+
+# References

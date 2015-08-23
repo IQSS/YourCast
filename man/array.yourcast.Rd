@@ -34,7 +34,7 @@ ylc.allc <- yourcast(formula=ff.allc, dataobj=chp.2.6.1, model="LC",
                        sample.frame=c(1950,2000,2001,2060))
                        
 yc.array <- array.yourcast(ylc.allc)
-dimnames(yc.array)
+names(yc.array)
 
 # predicted mortality rates (observed in-sample and predicted out-of-sample)
 # for geographic area '4150'

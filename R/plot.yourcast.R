@@ -180,10 +180,7 @@ plot.yourcast <- function(x, plots=c("age","time"),
      main <- paste(if(!is.null(title)){title},
                    if(!is.null(title) & !is.null(cntryname)){", "},
                    if(!is.null(cntryname)){cntryname},sep="")
-                             
-	if(print=="device"){dev.new(height=5,width=width)}
-	if(print=="pdf"){pdf(file=file,height=5,width=width)}
-	
+                           
 	### Call plots here
 	plot.list <- lapply(types,function(x){ switch(x,
 		age=ageplot(get(geonames[i]),age.opts=age.options, sample.frame=sf),
@@ -193,11 +190,17 @@ plot.yourcast <- function(x, plots=c("age","time"),
 		threedim=threedimplot(get(geonames[i]),threedim.opts=threedim.options, sample.frame=sf))})
 	
 	### Pass arguments to grid
-	grid.args <- c(plot.list,list(nrow=1,ncol=length(types),main=main,sub=subtitle))
-	do.call(grid.arrange,grid.args)
-	if(print=="pdf"){dev.off()}
-	if(print=="device"){if(i != length(geonames)) {
-    user.option(i,csid.unique,cntryname,G.names)}}
+	grid.args <- c(plot.list,list(nrow=1,ncol=length(types),top=main,bottom=subtitle))
+	gep <- do.call(gridExtra::grid.arrange, grid.args)
+	if(print=="pdf"){
+		ggsave(filename = file, gep, height=5, width=width)
+		}
+	if(print=="device"){
+		gep
+		if(i != length(geonames)) {
+    		user.option(i,csid.unique,cntryname,G.names)
+    	}
+    }
   } # end of loop over geonames
 } # end of plot fxn
 

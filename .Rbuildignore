@@ -1,2 +1,4 @@
 Makefile
 README.md
+.DS_Store
+^\.travis\.yml$

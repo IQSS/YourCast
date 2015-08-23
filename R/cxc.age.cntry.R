@@ -1,3 +1,4 @@
+
   ##################################################################
 ##
 ## FUNCTION NAME:  cxc() & cxc.model() 
@@ -577,9 +578,7 @@ if(length(cntry.vec) && Hct.theta !=0 ){
       }
    
       beta.hat.cntry.lst[[age.char[i]]] <- beta.hat.cntry
-     
-###   print(beta.hat.cntry.lst[[age.char[i]]])
-      
+           
       limb <- make.beta.cn.lst(beta.hat.cntry, age.char[i],as.character(cntry.related))
       nmbeta <- rownames(beta.hat.cntry)
    
@@ -652,4 +651,4 @@ if(length(cntry.vec) && Hct.theta !=0 ){
                  }, coeff)
     return(ix)
   }
-  
+ 
